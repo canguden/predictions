@@ -1,19 +1,25 @@
-import os
-import pandas
- 
-#Changing the current working directory
-os.chdir("D:/Ediwsor_Project - Bike_Rental_Count")
-BIKE = pandas.read_csv("Bike.csv")
-bike = BIKE.copy()
- 
-categorical_col_updated = ['season','yr','mnth','weathersit','holiday']
-bike = pandas.get_dummies(bike, columns = categorical_col_updated) 
- 
-#Separating the dependent and independent data variables into two data frames.
-from sklearn.model_selection import train_test_split 
- 
-X = bike.drop(['cnt'],axis=1) 
-Y = bike['cnt']
- 
-# Splitting the dataset into 80% training data and 20% testing data.
-X_train, X_test, Y_train, Y_test = train_test_split(X, Y, test_size=.20, random_state=0)
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
+
+opponent_scores = np.array([80, 75, 90, 70, 85, 95, 78, 92, 88, 79])
+home_away = np.array([1, 0, 1, 0, 1, 1, 0, 1, 0, 0])
+team_scores = np.array([85, 90, 88, 75, 92, 97, 80, 94, 90, 78])
+
+X = np.column_stack((opponent_scores, home_away))
+y = team_scores
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+
+model = LinearRegression()
+model.fit(X_train, y_train)
+
+y_pred = model.predict(X_test)
+
+mse = mean_squared_error(y_test, y_pred)
+print(f"Mean Squared Error: {mse}")
+
+new_data = np.array([[85, 1]])
+predicted_score = model.predict(new_data)
+print(f"Predicted score: {predicted_score[0]}")
+
